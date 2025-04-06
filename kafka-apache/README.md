@@ -37,3 +37,51 @@ podman exec --workdir /opt/kafka/bin/ -it broker sh
 curl --json '{"email":"user@example.com","name":"Tanapat Sanitmoung"}' \
   http://localhost:8080/customers
 ```
+
+note:
+- lombok and mapstruct : together we need to follow this [link](https://www.baeldung.com/java-mapstruct-lombok)
+
+pom.xml
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>1.6.3</version>
+            </path>
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.32</version>
+            </path>
+            <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-mapstruct-binding</artifactId>
+                <version>0.2.0</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
+
+- mapstruct dependency injection issue solve by follow this [link](https://stackoverflow.com/questions/38807415/mapstruct-how-can-i-inject-a-spring-dependency-in-the-generated-mapper-class)
+
+before
+```java
+@Mapper
+public interface CustomerMapper {
+    // ...
+}
+```
+
+after
+```java
+@Mapper(componentModel = "spring", uses = CustomerMapper.class)
+public interface CustomerMapper { 
+    // ...
+}
+```
