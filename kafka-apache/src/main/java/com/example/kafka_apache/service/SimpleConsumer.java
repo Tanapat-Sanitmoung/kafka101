@@ -1,14 +1,12 @@
 package com.example.kafka_apache.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class SimpleConsumer {
-
-    final static Logger LOGGER = LoggerFactory.getLogger(SimpleConsumer.class);
 
     @KafkaListener(
             id = "hai-mae",
@@ -16,6 +14,6 @@ public class SimpleConsumer {
             autoStartup = "true",
             concurrency = "1")
     public void listen(String msg) {
-        LOGGER.info("Get message : {}", msg);
+        log.info("Get message : {}", msg);
     }
 }
