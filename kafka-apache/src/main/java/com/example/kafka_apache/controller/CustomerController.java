@@ -14,7 +14,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public Mono<Customer> create(@RequestBody Customer customer)
     {
         return customerService.save(customer);
