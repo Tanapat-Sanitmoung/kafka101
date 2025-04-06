@@ -32,3 +32,8 @@ podman exec --workdir /opt/kafka/bin/ -it broker sh
 
 ---
 
+```shell
+# Create a customer
+curl --json '{"email":"user@example.com","name":"Tanapat Sanitmoung"}' \
+  http://localhost:8080/customers
+```
