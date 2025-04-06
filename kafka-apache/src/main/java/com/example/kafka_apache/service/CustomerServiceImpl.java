@@ -12,8 +12,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class CustomerServiceImpl implements CustomerService
-{
+public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository repository;
 
     @Override

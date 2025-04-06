@@ -13,9 +13,9 @@ public class SimpleConsumer {
     @KafkaListener(
             id = "hai-mae",
             topics = "test-topic",
-            autoStartup = "true")
-    public void listen(String msg)
-    {
+            autoStartup = "true",
+            concurrency = "1")
+    public void listen(String msg) {
         LOGGER.info("Get message : {}", msg);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.kafka_apache.controller;
 
+import com.example.kafka_apache.constance.KafkaTopics;
 import com.example.kafka_apache.model.Customer;
 import com.example.kafka_apache.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -17,31 +18,28 @@ public class CustomerController {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @PostMapping("")
-    public Mono<Customer> create(@RequestBody Customer customer)
-    {
+    public Mono<Customer> create(@RequestBody Customer customer) {
         return customerService.save(customer)
                 .flatMap(this::notifyCustomerCreated);
     }
 
     @GetMapping("/{id}")
-    public Mono<Customer> getById(@PathVariable String id)
-    {
+    public Mono<Customer> getById(@PathVariable String id) {
         return customerService.findById(id);
     }
 
     @GetMapping("/all")
-    public Flux<Customer> getAll()
-    {
+    public Flux<Customer> getAll() {
         return customerService.findAll();
     }
 
-    private Mono<Customer> notifyCustomerCreated(Customer customer)
-    {
+    private Mono<Customer> notifyCustomerCreated(Customer customer) {
         return Mono.fromFuture(
-                kafkaTemplate.send(
-                        "test-topic",
-                        "customer-created",
-                        String.format("customer has been created [id = %s]", customer.getId()))
-        ).map(x -> customer);
+                        kafkaTemplate.send(
+                                KafkaTopics.TEST,
+                                "customer-created",
+                                String.format("customer has been created [id = %s]", customer.getId()))
+                )
+                .map(x -> customer);
     }
 }
