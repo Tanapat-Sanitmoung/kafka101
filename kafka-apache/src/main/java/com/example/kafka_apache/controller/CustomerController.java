@@ -1,6 +1,7 @@
 package com.example.kafka_apache.controller;
 
 import com.example.kafka_apache.constance.KafkaTopics;
+import com.example.kafka_apache.exception.DuplicationEmailException;
 import com.example.kafka_apache.mapper.CustomerMapper;
 import com.example.kafka_apache.model.Customer;
 import com.example.kafka_apache.service.CustomerService;
@@ -24,6 +25,13 @@ public class CustomerController {
     public Mono<Customer> create(@Valid @RequestBody CreateCustomerRequest request) {
         return Mono.just(request)
                 .map(mapper::toCustomer)
+                .flatMap(newCustomer ->
+                        customerService
+                                .findByEmail(newCustomer.getEmail())
+                                .switchIfEmpty(Mono.just(newCustomer))
+                                .flatMap(existingCustomer -> Mono.justOrEmpty((Customer)null))
+                                .switchIfEmpty(Mono.error(new DuplicationEmailException(newCustomer.getEmail())))
+                )
                 .flatMap(customerService::save)
                 .flatMap(this::notifyCustomerCreated);
     }
