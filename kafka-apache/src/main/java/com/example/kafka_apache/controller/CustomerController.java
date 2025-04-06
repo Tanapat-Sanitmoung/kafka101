@@ -1,8 +1,10 @@
 package com.example.kafka_apache.controller;
 
 import com.example.kafka_apache.constance.KafkaTopics;
+import com.example.kafka_apache.mapper.CustomerMapper;
 import com.example.kafka_apache.model.Customer;
 import com.example.kafka_apache.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final CustomerMapper mapper;
 
     @PostMapping("")
-    public Mono<Customer> create(@RequestBody Customer customer) {
-        return customerService.save(customer)
+    public Mono<Customer> create(@Valid @RequestBody CreateCustomerRequest request) {
+        return Mono.just(request)
+                .map(mapper::toCustomer)
+                .flatMap(customerService::save)
                 .flatMap(this::notifyCustomerCreated);
     }
 
