@@ -28,10 +28,9 @@ public class CustomerController {
                 .flatMap(newCustomer ->
                         customerService
                                 .findByEmail(newCustomer.getEmail())
+                                .flatMap(__ -> Mono.error(new DuplicationEmailException(newCustomer.getEmail())))
                                 .switchIfEmpty(Mono.just(newCustomer))
-                                .flatMap(existingCustomer -> Mono.justOrEmpty((Customer)null))
-                                .switchIfEmpty(Mono.error(new DuplicationEmailException(newCustomer.getEmail())))
-                )
+                                .cast(Customer.class))
                 .flatMap(customerService::save)
                 .flatMap(this::notifyCustomerCreated);
     }
