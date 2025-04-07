@@ -33,7 +33,7 @@ public class CustomerController {
         return customerService
                 .findByEmail(newCustomer.getEmail())
                 .flatMap(__ ->
-                        Mono.error(new DuplicationEmailException(newCustomer.getEmail())).cast(Customer.class))
+                        Mono.<Customer>error(new DuplicationEmailException(newCustomer.getEmail())))
                 .switchIfEmpty(customerService.save(newCustomer));
     }
 
