@@ -25,14 +25,17 @@ public class CustomerController {
     public Mono<Customer> create(@Valid @RequestBody CreateCustomerRequest request) {
         return Mono.just(request)
                 .map(mapper::toCustomer)
-                .flatMap(newCustomer ->
-                        customerService
-                                .findByEmail(newCustomer.getEmail())
-                                .flatMap(__ -> Mono.error(new DuplicationEmailException(newCustomer.getEmail())))
-                                .switchIfEmpty(Mono.just(newCustomer))
-                                .cast(Customer.class))
+                .flatMap(this::checkIfCustomerAlreadyExists)
                 .flatMap(customerService::save)
                 .flatMap(this::notifyCustomerCreated);
+    }
+
+    private Mono<Customer> checkIfCustomerAlreadyExists(Customer newCustomer) {
+        return customerService
+                .findByEmail(newCustomer.getEmail())
+                .flatMap(__ -> Mono.error(new DuplicationEmailException(newCustomer.getEmail())))
+                .switchIfEmpty(Mono.just(newCustomer))
+                .cast(Customer.class);
     }
 
     @GetMapping("/{id}")
